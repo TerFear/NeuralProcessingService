@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package get_message;
+
+option go_package = "your_project/proto/get_message";
+
+// Сервис для отправки запроса нейросети
+service NeuralProcessingService {
+    // Отправка задания на обработку
+    rpc SubmitJob (SubmitJobRequest) returns (SubmitJobResponse);
+}
+
+// Запрос пользователя
+message SubmitJobRequest {
+    string user_id = 1;         // ID пользователя
+    string session_id = 2;      // Сессия (UUID)
+    string input_data = 3;      // Входной текст
+    string data_type = 4;       // Тип данных
+}
+
+// Ответ после постановки в очередь
+message SubmitJobResponse {
+    string session_id = 1;      // Сессия
+    string status = 2;
+    string output = 3;          // Статус: "accepted"
+}
