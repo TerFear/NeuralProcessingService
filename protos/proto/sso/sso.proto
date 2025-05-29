@@ -13,14 +13,11 @@ service NeuralProcessingService {
 // Запрос пользователя
 message SubmitJobRequest {
     string user_id = 1;         // ID пользователя
-    string session_id = 2;      // Сессия (UUID)
-    string input_data = 3;      // Входной текст
-    string data_type = 4;       // Тип данных
+    string data = 2;   // Входной текст
+    string topic = 3;
 }
 
 // Ответ после постановки в очередь
 message SubmitJobResponse {
-    string session_id = 1;      // Сессия
-    string status = 2;
-    string output = 3;          // Статус: "accepted"
+    string data = 1;
 }

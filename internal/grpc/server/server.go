@@ -9,7 +9,7 @@ import (
 )
 
 type Processing interface {
-	Process(ctx context.Context, data string, dataType string) (string, error)
+	Process(ctx context.Context, userID string, data string, topic string) (string, error)
 }
 
 // чтоб управлять функциями
@@ -18,8 +18,8 @@ type ServerAPI struct {
 	Processer Processing
 }
 
-func Register(gRPC *grpc.Server) {
-	ssov1.RegisterNeuralProcessingServiceServer(gRPC, &ServerAPI{})
+func Register(gRPC *grpc.Server, processing Processing) {
+	ssov1.RegisterNeuralProcessingServiceServer(gRPC, &ServerAPI{Processer: processing})
 }
 
 func (s *ServerAPI) SubmitJob(ctx context.Context, req *ssov1.SubmitJobRequest) (*ssov1.SubmitJobResponse, error) {
@@ -28,15 +28,17 @@ func (s *ServerAPI) SubmitJob(ctx context.Context, req *ssov1.SubmitJobRequest) 
 		return nil, status.Error(codes.InvalidArgument, "request is nil")
 	}
 
-	process, err := s.Processer.Process(ctx, req.GetInputData(), req.GetDataType())
+	userID := req.GetUserId()
+	data := req.GetData()
+	topic := req.GetTopic()
+
+	res, err := s.Processer.Process(ctx, userID, data, topic)
 
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to process data: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	return &ssov1.SubmitJobResponse{
-		SessionId: "abc123",
-		Status:    "success",
-		Output:    process,
-	}, nil
+		Data: res,
+	}, status.Error(codes.OK, "")
 }

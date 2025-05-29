@@ -3,6 +3,7 @@ package grpc
 import (
 	"fmt"
 	"gRPC_get_message/internal/grpc/server"
+	"gRPC_get_message/internal/services/prc"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"net"
@@ -16,10 +17,10 @@ type APP struct {
 }
 
 // регистрация нового gRPC
-func New(log *zap.Logger, port int) *APP {
+func New(log *zap.Logger, port int, processing *prc.Processing) *APP {
 	gRPC := grpc.NewServer()
 
-	server.Register(gRPC)
+	server.Register(gRPC, processing)
 	log.Info("gRPC server created")
 	return &APP{
 		log:     log,
