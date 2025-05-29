@@ -1,4 +1,4 @@
-module gRPC_get_message
+module github.com/TerFear/NeuralProcessingService 
 
 go 1.23.0
 
